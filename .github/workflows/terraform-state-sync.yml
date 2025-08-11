@@ -1,0 +1,132 @@
+name: Terraform State Sync to S3
+
+on:
+  push:
+    branches: [ main, master ]
+    paths:
+      - '**/*.tf'
+      - '**/*.tfvars.example'
+  pull_request:
+    branches: [ main, master ]
+    paths:
+      - '**/*.tf'
+      - '**/*.tfvars.example'
+  workflow_dispatch:
+
+permissions:
+  id-token: write
+  contents: read
+
+env:
+  AWS_REGION: eu-west-2  # Change to your preferred region
+  TF_VERSION: 1.5.0      # Specify your Terraform version
+
+jobs:
+  terraform-state-sync:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+        aws-region: ${{ env.AWS_REGION }}
+        role-session-name: GitHubActions-TerraformStateSync
+
+    - name: Setup Terraform
+      uses: hashicorp/setup-terraform@v3
+      with:
+        terraform_version: ${{ env.TF_VERSION }}
+
+    - name: Terraform Init
+      run: terraform init
+      continue-on-error: true
+
+    - name: Terraform Plan
+      run: terraform plan -out=tfplan
+      continue-on-error: true
+
+    - name: Find and sync state files
+      run: |
+        # Create timestamp for organized storage
+        TIMESTAMP=$(date +"%Y%m%d_%H%M%S")
+        BRANCH_NAME=${GITHUB_REF#refs/heads/}
+        
+        # Find all .tfstate files (including backup files)
+        find . -name "*.tfstate*" -type f | while read -r statefile; do
+          if [ -f "$statefile" ]; then
+            # Create S3 key with organized structure
+            RELATIVE_PATH=${statefile#./}
+            S3_KEY="terraform-states/${BRANCH_NAME}/${TIMESTAMP}/${RELATIVE_PATH}"
+            
+            echo "Uploading $statefile to s3://${{ secrets.S3_BUCKET_NAME }}/$S3_KEY"
+            aws s3 cp "$statefile" "s3://${{ secrets.S3_BUCKET_NAME }}/$S3_KEY" \
+              --metadata "branch=${BRANCH_NAME},timestamp=${TIMESTAMP},commit=${GITHUB_SHA}"
+          fi
+        done
+        
+        # Also sync the current state if terraform was successfully initialized
+        if [ -f "terraform.tfstate" ]; then
+          S3_KEY="terraform-states/${BRANCH_NAME}/current/terraform.tfstate"
+          echo "Uploading current state to s3://${{ secrets.S3_BUCKET_NAME }}/$S3_KEY"
+          aws s3 cp "terraform.tfstate" "s3://${{ secrets.S3_BUCKET_NAME }}/$S3_KEY" \
+            --metadata "branch=${BRANCH_NAME},timestamp=${TIMESTAMP},commit=${GITHUB_SHA}"
+        fi
+        
+        # Sync plan file if it exists
+        if [ -f "tfplan" ]; then
+          S3_KEY="terraform-plans/${BRANCH_NAME}/${TIMESTAMP}/tfplan"
+          echo "Uploading plan to s3://${{ secrets.S3_BUCKET_NAME }}/$S3_KEY"
+          aws s3 cp "tfplan" "s3://${{ secrets.S3_BUCKET_NAME }}/$S3_KEY" \
+            --metadata "branch=${BRANCH_NAME},timestamp=${TIMESTAMP},commit=${GITHUB_SHA}"
+        fi
+
+    - name: List uploaded files
+      run: |
+        echo "Files uploaded to S3:"
+        aws s3 ls "s3://${{ secrets.S3_BUCKET_NAME }}/terraform-states/" --recursive | tail -10
+
+    - name: Cleanup local state files (security)
+      run: |
+        # Remove any local state files for security
+        find . -name "*.tfstate*" -type f -delete
+        rm -f tfplan
+      if: always()
+
+  # Separate job for state file restoration (manual trigger)
+  restore-state:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'workflow_dispatch'
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+        aws-region: ${{ env.AWS_REGION }}
+        role-session-name: GitHubActions-StateRestore
+
+    - name: List available state files
+      run: |
+        echo "Available state files in S3:"
+        aws s3 ls "s3://${{ secrets.S3_BUCKET_NAME }}/terraform-states/" --recursive
+
+    - name: Download latest state file
+      run: |
+        BRANCH_NAME=${GITHUB_REF#refs/heads/}
+        
+        # Download the current state file for this branch
+        if aws s3 ls "s3://${{ secrets.S3_BUCKET_NAME }}/terraform-states/${BRANCH_NAME}/current/terraform.tfstate"; then
+          echo "Downloading current state file for branch: $BRANCH_NAME"
+          aws s3 cp "s3://${{ secrets.S3_BUCKET_NAME }}/terraform-states/${BRANCH_NAME}/current/terraform.tfstate" \
+            "./terraform.tfstate"
+          echo "State file downloaded successfully"
+        else
+          echo "No current state file found for branch: $BRANCH_NAME"
+        fi
