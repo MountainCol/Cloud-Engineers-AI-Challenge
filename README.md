@@ -1,6 +1,4 @@
 # Cloud-Engineers-AI-Challenge
-AI challenge to build an application for a Agri-tech firm
-# Test comment
 ## Agricultural AI Agent ##
 Basic premise
 In this world there is a heap of people who want to do good. I am one of them. Coming from a farming background (my parents are Central Otago, New Zeland High Country merino sheep farmers), I have seen the struggles of farmers and the agricultural sector.
