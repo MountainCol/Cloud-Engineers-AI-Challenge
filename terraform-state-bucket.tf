@@ -16,14 +16,6 @@ resource "random_string" "bucket_suffix" {
   upper   = false
 }
 
-# Enable versioning for the S3 bucket
-resource "aws_s3_bucket_versioning" "terraform_state_versioning" {
-  bucket = aws_s3_bucket.terraform_state.id
-  versioning_configuration {
-    status = "Enabled"
-  }
-}
-
 # Enable server-side encryption
 resource "aws_s3_bucket_server_side_encryption_configuration" "terraform_state_encryption" {
   bucket = aws_s3_bucket.terraform_state.id
@@ -63,7 +55,7 @@ resource "aws_iam_role" "github_actions_role" {
             "token.actions.githubusercontent.com:aud" = "sts.amazonaws.com"
           }
           StringLike = {
-            "token.actions.githubusercontent.com:sub" = "MountainColCloud-Engineers-AI-Challenge:*"
+            "token.actions.githubusercontent.com:sub" = "repo:MountainCol/Cloud-Engineers-AI-Challenge:*"
           }
         }
       }
