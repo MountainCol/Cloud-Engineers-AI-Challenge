@@ -17,7 +17,7 @@ I had the data and now I needed the architecture. I found a great article on how
 
 https://medium.com/@ajaypan2/building-a-serverless-chatbot-on-aws-with-amazon-bedrock-a-real-world-rag-use-case-a521a0fcc0b5
 
-alt text
+![Alt text](images/image.png)
 
 AWS also has a vast amount of help in their solutions library, architecture centre and workshops.
 
