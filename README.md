@@ -1,7 +1,7 @@
 # Cloud-Engineers-AI-Challenge
 ## Agricultural AI Agent ##
 Basic premise
-In this world there is a heap of people who want to do good. I am one of them. Coming from a farming background (my parents are Central Otago, New Zealand High Country merino sheep farmers), I have seen the struggles of farmers and the agricultural sector.
+In this world there is a heap of people who want to do good. I am one of them. Coming from a farming background (my parents are Central Otago, New Zealand, High Country merino sheep farmers), I have seen the struggles of farmers and the agricultural sector.
 
 I have also seen the power of AI and machine learning in the agricultural sector and want to harness these powerful tools to help the community I grew up in.
 
