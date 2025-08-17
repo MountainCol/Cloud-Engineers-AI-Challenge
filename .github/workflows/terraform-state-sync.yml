@@ -20,6 +20,8 @@ permissions:
 env:
   AWS_REGION: eu-west-2  # Change to your preferred region
   TF_VERSION: 1.5.0      # Specify your Terraform version
+  TF_VAR_knowledge_base_role_arn: ${{ secrets.KNOWLEDGE_BASE_ROLE_ARN }}
+  TF_VAR_opensearch_collection_arn: ${{ secrets.OPENSEARCH_COLLECTION_ARN }}
 
 jobs:
   terraform-state-sync:

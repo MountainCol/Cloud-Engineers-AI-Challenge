@@ -36,3 +36,7 @@ override.tf.json
 .terraformrc
 terraform.rc
 my-ai-agents/
+
+# Ignore knowledge base files
+terraform.tfvars
+*.tfvars
