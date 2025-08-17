@@ -16,24 +16,27 @@ variable "github_repo" {
   default     = "YOUR_GITHUB_USERNAME/YOUR_REPO_NAME"
 }
 
+# Knowledge Base Configuration
 variable "knowledge_base_name" {
-  description = "Name for the Bedrock knowledge base"
+  description = "Name of the Bedrock Knowledge Base"
   type        = string
-  default     = "agri-agent-knowledge-base"
+  default     = "Agri-Agent-Knowledge-Base"
 }
 
 variable "knowledge_base_role_arn" {
-  description = "IAM role ARN for the Bedrock knowledge base"
+  description = "IAM role ARN for the Knowledge Base"
   type        = string
-}
-
-variable "embedding_model_arn" {
-  description = "ARN of the embedding model for the knowledge base"
-  type        = string
-  default     = "arn:aws:bedrock:eu-west-2::foundation-model/amazon.titan-embed-text-v1"
+  sensitive   = true
 }
 
 variable "opensearch_collection_arn" {
-  description = "ARN of the OpenSearch Serverless collection"
+  description = "OpenSearch Serverless collection ARN"
   type        = string
+  sensitive   = true
+}
+
+variable "embedding_model_arn" {
+  description = "Bedrock embedding model ARN"
+  type        = string
+  default     = "arn:aws:bedrock:us-west-2::foundation-model/anthropic.claude-3-haiku-20240307-v1:0"
 }
