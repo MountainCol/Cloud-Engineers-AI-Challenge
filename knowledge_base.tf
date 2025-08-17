@@ -1,9 +1,9 @@
 resource "aws_bedrockagent_knowledge_base" "Agri-Agent-Knowledge-Base" {
   name     = "Agri-Agent-Knowledge-Base"
-  role_arn = aws_iam_role.example.arn
+  role_arn = "arn:aws:iam::161272226301:role/AI_Agent_Bedrock_Knowledge_base_role"
   knowledge_base_configuration {
     vector_knowledge_base_configuration {
-      embedding_model_arn = "arn:aws:bedrock:us-west-2::foundation-model/amazon.titan-embed-text-v2:0"
+      embedding_model_arn = "arn:aws:bedrock:us-west-2::foundation-model/anthropic.claude-3-haiku-20240307-v1:0"
     }
     type = "VECTOR"
   }
