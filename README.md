@@ -26,3 +26,4 @@ From the solutions library: https://aws.amazon.com/solutions/guidance/building-c
 This workshop is related to the project so I have used this a part of my research into designing and production of the chatbot.
 
 https://catalog.us-east-1.prod.workshops.aws/workshops/f5a3879d-086a-4873-b16f-bd4caf5c1623/en-US
+
