@@ -38,5 +38,5 @@ variable "opensearch_collection_arn" {
 variable "embedding_model_arn" {
   description = "Bedrock embedding model ARN"
   type        = string
-  default     = "arn:aws:bedrock:us-west-2::foundation-model/anthropic.claude-3-haiku-20240307-v1:0"
+  default     = "arn:aws:bedrock:eu-west-2::foundation-model/amazon.titan-embed-text-v1"
 }
