@@ -13,7 +13,7 @@ variable "environment" {
 variable "github_repo" {
   description = "GitHub repository in format 'username/repo-name'"
   type        = string
-  default     = "YOUR_GITHUB_USERNAME/YOUR_REPO_NAME"
+  default     = "MountainCol/Cloud-Engineers-AI-Challenge"
 }
 
 # Knowledge Base Configuration
