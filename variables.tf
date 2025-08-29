@@ -29,8 +29,8 @@ variable "knowledge_base_role_arn" {
   sensitive   = true
 }
 
-variable "opensearch_collection_arn" {
-  description = "OpenSearch Serverless collection ARN"
+variable "dataset_bucket_arn" {
+  description = "ARN of the S3 bucket for the knowledge base data source"
   type        = string
   sensitive   = true
 }
