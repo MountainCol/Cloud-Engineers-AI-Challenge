@@ -1,4 +1,4 @@
-resource "aws_bedrock_knowledge_base" "bedrock_kb-Farm-AI-Agent" {
+resource "aws_bedrockagent_knowledge_base" "bedrock_kb-Farm-AI-Agent" {
   name     = var.knowledge_base_name
   role_arn = var.knowledge_base_role_arn
 
