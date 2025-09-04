@@ -1,0 +1,100 @@
+# Windsurf Rules for Cloud Engineers AI Challenge
+# Version: 1.0
+# Last Updated: 2025-09-04
+
+## File Naming Conventions
+- Terraform files: kebab-case (e.g., bedrock-kb.tf, dataset-bucket.tf)
+- Python files: snake_case (e.g., bedrock_agent.py, data_processor.py)
+- Documentation: UPPERCASE.md (e.g., README.md, SETUP.md)
+- Config files: lowercase with dots (e.g., .gitignore, .terraform.lock.hcl)
+
+## Terraform Standards
+- Provider versions: Use ~> for minor version constraints
+  ```hcl
+  terraform {
+    required_version = ">= 1.0"
+    required_providers {
+      aws = {
+        source  = "hashicorp/aws"
+        version = "~> 5.0"
+      }
+    }
+  }
+  ```
+- Resource naming: project-component-environment pattern
+  Example: `cloud-engineers-kb-dev`, `cloud-engineers-bucket-prod`
+- Variables: Use descriptions and validation rules
+  ```hcl
+  variable "knowledge_base_name" {
+    description = "Name for the Bedrock knowledge base"
+    type        = string
+    validation {
+      condition     = length(var.knowledge_base_name) > 0
+      error_message = "Knowledge base name cannot be empty."
+    }
+  }
+  ```
+
+## AWS Resource Patterns
+- S3 buckets: Include random suffix for uniqueness
+- IAM roles: Follow least-privilege principle
+- Tags: Always include Environment, Project, Owner
+  ```hcl
+  tags = {
+    Environment = var.environment
+    Project     = "cloud-engineers-ai-challenge"
+    Owner       = "team"
+    ManagedBy   = "terraform"
+  }
+  ```
+
+## Python Code Standards
+- Use type hints for all functions
+- Follow PEP 8 naming conventions
+- Include docstrings for classes and functions
+  ```python
+  def process_documents(bucket_name: str, prefix: str) -> List[Dict[str, Any]]:
+      """Process documents from S3 bucket for knowledge base ingestion.
+      
+      Args:
+          bucket_name: S3 bucket containing documents
+          prefix: S3 key prefix to filter documents
+          
+      Returns:
+          List of processed document metadata
+      """
+  ```
+
+## Documentation Requirements
+- All .tf files must have header comments explaining purpose
+- README.md must include setup instructions and prerequisites
+- Include architecture diagrams in /images/ directory
+- Use markdown tables for configuration options
+
+## Security Practices
+- No hardcoded credentials in any files
+- Use AWS IAM roles with OIDC for GitHub Actions
+- Enable encryption for all storage resources
+- Implement proper error handling and logging
+
+## Version Control
+- Commit messages: Use conventional commits (feat:, fix:, docs:)
+- Branch naming: feature/description, bugfix/description
+- Always include .gitignore for Terraform and Python artifacts
+
+## Dependencies
+- Terraform: >= 1.0
+- Python: >= 3.9
+- AWS CLI: >= 2.0
+- Required Python packages in requirements.txt with pinned versions
+
+## Examples
+- Bedrock KB: Uses OpenSearch Serverless + Titan embeddings
+- S3 Integration: Versioned buckets with lifecycle policies  
+- CI/CD: GitHub Actions with OIDC authentication
+- State Management: Remote backend with encryption
+
+## Error Handling
+- Always include try/catch blocks for AWS API calls
+- Implement exponential backoff for rate-limited operations
+- Log errors with sufficient context for debugging
